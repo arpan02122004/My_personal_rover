@@ -1,12 +1,3 @@
-/*  
-  L298N Motor Control Demonstration with Joystick
-  L298N-Motor-Control-Demo-Joystick.ino
-  Demonstrates use of Joystick control with Arduino and L298N Motor Controller
-  
-  DroneBot Workshop 2017
-  http://dronebotworkshop.com
-*/
-
 // Motor A
 
 int enA = 9;
@@ -93,7 +84,7 @@ void loop() {
 		// As we are going backwards we need to reverse readings
 
 		joyposVert = joyposVert - 460; // This produces a negative number
-    joyposVert = joyposVert * -1; // Make the number positive
+    	joyposVert = joyposVert * -1; // Make the number positive
 		MotorSpeed1 = map(joyposVert, 0, 460, 0, 255);
 		MotorSpeed2 = map(joyposVert, 0, 460, 0, 255);
 

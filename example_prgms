@@ -1,0 +1,153 @@
+// include libraries
+#include <Servo.h>
+
+// define pins
+const int trigPin = 9;
+const int echoPin = 10;
+const int servoPin = 5;
+const int enablePin = 3;
+const int in1Pin = 4;
+const int in2Pin = 2;
+const int in3Pin = 7;
+const int in4Pin = 8;
+
+// create servo object
+Servo ultrasonicServo;
+
+// variables
+long duration;
+int distance;
+int leftDistance;
+int rightDistance;
+int servoPos;
+
+void setup() {
+  // initialize serial communication
+  Serial.begin(9600);
+  
+  // set pin modes
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(enablePin, OUTPUT);
+  pinMode(in1Pin, OUTPUT);
+  pinMode(in2Pin, OUTPUT);
+  pinMode(in3Pin, OUTPUT);
+  pinMode(in4Pin, OUTPUT);
+  
+  // attach servo to pin
+  ultrasonicServo.attach(servoPin);
+  
+  // set initial servo position
+  servoPos = 90;
+  ultrasonicServo.write(servoPos);
+  
+  // set motor speed
+  analogWrite(enablePin, 255);
+}
+
+void loop() {
+  // calculate distance to obstacle in front
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  
+  // calculate distance to obstacle on left
+  servoPos = 45;
+  ultrasonicServo.write(servoPos);
+  delay(500);
+  leftDistance = getDistance();
+  
+  // calculate distance to obstacle on right
+  servoPos = 135;
+  ultrasonicServo.write(servoPos);
+  delay(500);
+  rightDistance = getDistance();
+  
+  // reset servo position
+  servoPos = 90;
+  ultrasonicServo.write(servoPos);
+  
+  // adjust direction based on distances
+  if (distance > 30) {
+    // move forward
+    digitalWrite(in1Pin, HIGH);
+    digitalWrite(in2Pin, LOW);
+    digitalWrite(in3Pin, HIGH);
+    digitalWrite(in4Pin, LOW);
+  } else {
+    if (leftDistance > rightDistance) {
+      // turn left
+      digitalWrite(in1Pin, LOW);
+      digitalWrite(in2Pin, HIGH);
+      digitalWrite(in3Pin, HIGH);
+      digitalWrite(in4Pin, LOW);
+    } else {
+      // turn right
+      digitalWrite(in1Pin, HIGH);
+      digitalWrite(in2Pin, LOW);
+      digitalWrite(in3Pin, LOW);
+      digitalWrite(in4Pin, HIGH);
+    }
+  }
+}
+
+// function to calculate distance using ultrasonic sensor
+int getDistance() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  int distance = duration * 0.034 / 2;
+  return distance;
+}
+
+
+
+const int xPin = A0; // the pin for the X-axis of the joystick
+const int yPin = A1; // the pin for the Y-axis of the joystick
+const int buttonPin = 2; // the pin for the button on the joystick
+int buttonState = 0; // current state of the button
+int lastButtonState = 0; // previous state of the button
+
+void setup() {
+  pinMode(buttonPin, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  // read the X and Y values from the joystick
+  int xValue = analogRead(xPin);
+  int yValue = analogRead(yPin);
+  
+  // read the state of the button
+  buttonState = digitalRead(buttonPin);
+  
+  // check if the button has been pressed
+  if (buttonState != lastButtonState) {
+    if (buttonState == HIGH) {
+      Serial.println("Button pressed!");
+    }
+    else {
+      Serial.println("Button released!");
+    }
+  }
+  
+  // update the last button state
+  lastButtonState = buttonState;
+  
+  // print the X and Y values to the serial monitor
+  Serial.print("X value: ");
+  Serial.print(xValue);
+  Serial.print(", Y value: ");
+  Serial.println(yValue);
+  
+  // add a short delay to avoid reading the joystick too quickly
+  delay(100);
+}
+

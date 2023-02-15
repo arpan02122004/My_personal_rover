@@ -25,7 +25,7 @@ duration = pulseIn(echo, HIGH);
 distance = duration*0.034/2;
 if (distance <= 10){
   digitalWrite(buzzer, HIGH);
- }
+}
 else{
   digitalWrite(buzzer, LOW);
  }
